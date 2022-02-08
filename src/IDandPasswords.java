@@ -1,8 +1,9 @@
-import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class IDandPasswords {
-	// initialize HashMap to store IDs & passwords
-	HashMap<String, String> loginInfo = new HashMap<String, String>();
+	// initialize TreeMap to store IDs & passwords
+	Map<String, String> loginInfo = new TreeMap<>();
 	
 	// add IDs & passwords
 	IDandPasswords() {
@@ -12,9 +13,9 @@ public class IDandPasswords {
 		loginInfo.put("Becky", "789");
 	}
 	
-	// retrieves the HashMap
+	// retrieves the TreeMap
 	// protected so that login info is not publicly available
-	protected HashMap getLoginInfo() {
+	protected Map<String, String> getLoginInfo() {
 		return loginInfo;
 	}
 	

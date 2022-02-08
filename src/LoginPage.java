@@ -2,7 +2,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -22,11 +23,11 @@ public class LoginPage implements ActionListener {
 	JLabel userPasswordLabel = new JLabel("Password:");
 	JLabel messageLabel = new JLabel();
 	
-	// initialize global HashMap
-	HashMap<String, String> loginInfo = new HashMap<String, String>();
+	// initialize global TreeMap
+	Map<String, String> loginInfo = new TreeMap<>();
 	
-	LoginPage(HashMap<String, String> loginInfoOriginal) {
-		// create copy of original HashMap with login info
+	LoginPage(Map<String, String> loginInfoOriginal) {
+		// create copy of original TreeMap with login info
 		// copy is globally available within login page
 		loginInfo = loginInfoOriginal;
 		

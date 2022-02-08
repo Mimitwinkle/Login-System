@@ -7,7 +7,7 @@ public class WelcomePage {
 	
 	// instantiate frame & label
 	JFrame frame = new JFrame();
-	JLabel welcomeLabel;
+	JLabel welcomeLabel = new JLabel();
 	
 	WelcomePage(String userID) {
 		// set position, size & font for label
