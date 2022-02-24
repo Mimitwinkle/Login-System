@@ -7,13 +7,13 @@ public class WelcomePage {
 	
 	// instantiate frame & label
 	JFrame frame = new JFrame();
-	JLabel welcomeLabel;
+	JLabel welcomeLabel = new JLabel();
 	
-	WelcomePage(String userID) {
+	WelcomePage(String username) {
 		// set position, size & font for label
 		welcomeLabel.setBounds(0,0,200,35);
 		welcomeLabel.setFont(new Font(null,Font.PLAIN,25));
-		welcomeLabel.setText("Hello, " + userID);
+		welcomeLabel.setText("Hello, " + username);
 		
 		// add label
 		// make frame exit on close, set size, & make visible

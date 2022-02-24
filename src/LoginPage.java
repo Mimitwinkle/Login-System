@@ -2,13 +2,20 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.HashMap;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
+import com.mysql.cj.protocol.Resultset;
 
 public class LoginPage implements ActionListener {
 	
@@ -22,13 +29,7 @@ public class LoginPage implements ActionListener {
 	JLabel userPasswordLabel = new JLabel("Password:");
 	JLabel messageLabel = new JLabel();
 	
-	// initialize global HashMap
-	HashMap<String, String> loginInfo = new HashMap<String, String>();
-	
-	LoginPage(HashMap<String, String> loginInfoOriginal) {
-		// create copy of original HashMap with login info
-		// copy is globally available within login page
-		loginInfo = loginInfoOriginal;
+	LoginPage() {
 		
 		// set positions & sizes of labels & fields
 		userIDLabel.setBounds(50,100,200,25);
@@ -75,35 +76,60 @@ public class LoginPage implements ActionListener {
 		// if the event occurs on the log:
 		if(e.getSource()==loginButton) {
 			// retrieve input from fields
-			String userID = userIDField.getText();
+			String username = userIDField.getText();
 			// gets input from password field, converts to string & stores in a string
 			String password = String.valueOf(userPasswordField.getPassword());
 			
-			if(loginInfo.containsKey(userID)) { // if userID input is a key in loginInfo
-				if(loginInfo.get(userID).equals(password)) { // & if password input is the correct value
-					// display success message
-					messageLabel.setForeground(new Color(0,102,0));
-					messageLabel.setText("Login successful");
-					
-					// close login page
-					frame.dispose();
-					
-					// open welcome page
-					// pass userID as an argument so it can be used on the welcome page
-					WelcomePage welcomePage = new WelcomePage(userID);
-				}
-				else { // if key is correct, but password is not
-					// display message
-					messageLabel.setForeground(new Color(153,0,0));
-					messageLabel.setText("Wrong password");
-				}
+			
+			// attempt login using input strings
+			// call method which sends query to database
+			if (tryLogin(username, password)) {
+				// display success message
+				messageLabel.setForeground(new Color(0,102,0));
+				messageLabel.setText("Login successful");
+				
+				// closes login page
+				frame.dispose();
+				
+				// open welcome page
+				// pass userID as an argument so it can be used on the welcome page
+				WelcomePage welcomePage = new WelcomePage(username);
 			}
-			else { // if neither ID nor password are correct
+			else {
+				// if query is not successful:
 				// display message
 				messageLabel.setForeground(new Color(153,0,0));
-				messageLabel.setText("userID not found");
+				messageLabel.setText("userID or password is incorrect");
 			}
 			
 		}
 	}
+	
+	public boolean tryLogin(String username, String password) {
+		try {
+			Connection connection = JDBC.getConnection();		
+			String query = 
+					"SELECT username, password FROM java_demo.users "
+					+ "WHERE username = ?"
+					+ " AND password = ?";
+			
+			PreparedStatement prepStatement = connection.prepareStatement(query);
+			prepStatement.setString(1, username);
+			prepStatement.setString(2, password);
+			ResultSet resultSet = prepStatement.executeQuery();
+			
+			while (resultSet.next()) {
+				username = resultSet.getString("username");
+				password = resultSet.getString("password");
+				return true;
+			}
+		}
+		catch (Exception e) {
+			JOptionPane.showMessageDialog(frame, "Database error: " + e.getMessage());
+		}
+		
+		return false;
+	}
+	
+	
 }
