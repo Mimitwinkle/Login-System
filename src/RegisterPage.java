@@ -36,7 +36,7 @@ public class RegisterPage implements ActionListener {
 		
 		// set positions & sizes of buttons
 		// add event listeners to buttons
-		// prevent from being focusable (removes little box that appears when clicked
+		// prevent from being focusable (removes little box that appears when clicked)
 		createUserButton.setBounds(125,250,100,25);
 		createUserButton.addActionListener(this);
 		createUserButton.setFocusable(false);
@@ -46,7 +46,6 @@ public class RegisterPage implements ActionListener {
 		closeButton.setBounds(125, 290, 200, 25);
 		closeButton.addActionListener(this);
 		closeButton.setFocusable(false);
-		
 		
 		// fields
 		usernameField.setBounds(125,100,200,25);
@@ -81,12 +80,13 @@ public class RegisterPage implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		// if the "reset" button is clicked
 		if(e.getSource()==resetButton) {
 			// reset fields to blank
 			usernameField.setText("");
 			userPasswordField.setText("");
 		}
-		
+		// if the "create" button is clicked
 		if(e.getSource()==createUserButton) {
 			// retrieve input from fields
 			String username = usernameField.getText();
@@ -107,43 +107,49 @@ public class RegisterPage implements ActionListener {
 	}
 	
 	protected void createUser(String username, String password, String email) {
+		Connection connection = null;
+		ResultSet resultSet = null;
+		
 		// first, check if username already exists:
 		// if username exists, show message & break out of method
-		try {
-			Connection connection = JDBC.getConnection();		
+		try {	
+			connection = JDBC.getConnection();
 			String query = 
 					"SELECT username FROM java_demo.users "
 					+ "WHERE username = '" + username + "'";
 			
 			PreparedStatement prepStatement = connection.prepareStatement(query);
 			//prepStatement.setString(1, username);
-			ResultSet resultSet = prepStatement.executeQuery();
+			resultSet = prepStatement.executeQuery();
 			
 			while (resultSet.next()) {
-				username = resultSet.getString("username");
 				// show message
 				messageLabel.setForeground(new Color(153,0,0));
 				messageLabel.setText("Username already exists");
 				return;
-			}
-			
+			}	
 		}
 		catch (Exception e) {
 			JOptionPane.showMessageDialog(frame, "Database error: " + e.getMessage());
 			messageLabel.setForeground(new Color(153,0,0));
 			messageLabel.setText("Database error");
 		}
+		// make sure JDBC resources are closed
+		finally {
+		    try { if (connection != null) connection.close(); } catch (Exception e) {};
+		}
 		
 		
 		// if username does not exist, create new user
 		try {
-			Connection connection = JDBC.getConnection();		
+			connection = JDBC.getConnection();
 			String update = "INSERT INTO java_demo.users (username, password, email) "
 					+ "VALUES ('" + username + "' , '" + password + "' , '" + email + "')";
 			
 			PreparedStatement prepStatement = connection.prepareStatement(update);
 			
-			// I had issues using the below method of inserting the variables with question marks. I'll try to figure it out later.
+			// I had issues using the below method of inserting the variables with question marks.
+			// I'll try to figure it out later.
 			//prepStatement.setString(1, username);
 			//prepStatement.setString(2, password);
 			//prepStatement.setString(3, email);
@@ -159,7 +165,10 @@ public class RegisterPage implements ActionListener {
 			messageLabel.setForeground(new Color(153,0,0));
 			messageLabel.setText("Database error");
 		}
-		
+		// make sure JDBC resources are closed
+		finally {
+		    try { if (connection != null) connection.close(); } catch (Exception e) {};
+		}
 	}
 	
 	

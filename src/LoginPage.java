@@ -68,13 +68,13 @@ public class LoginPage implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// if the event occurs on the reset button:
+		// if the "reset" button is clicked
 		if(e.getSource()==resetButton) {
 			// reset fields to blank
 			usernameField.setText("");
 			userPasswordField.setText("");
 		}
-		// if the event occurs on the log:
+		// if the "login" button is clicked
 		if(e.getSource()==loginButton) {
 			// retrieve input from fields
 			String username = usernameField.getText();
@@ -103,7 +103,7 @@ public class LoginPage implements ActionListener {
 				messageLabel.setText("username or password is incorrect");
 			}
 		}
-		
+		// if the "new user" button is clicked
 		if(e.getSource()==newUserButton) {
 			// open user registration frame
 			RegisterPage registerPage = new RegisterPage();
@@ -111,8 +111,9 @@ public class LoginPage implements ActionListener {
 	}
 	
 	protected boolean tryLogin(String username, String password) {
+		Connection connection = null;
 		try {
-			Connection connection = JDBC.getConnection();		
+			connection = JDBC.getConnection();		
 			String query = 
 					"SELECT username, password FROM java_demo.users "
 					+ "WHERE username = ?"
@@ -132,6 +133,10 @@ public class LoginPage implements ActionListener {
 		}
 		catch (Exception e) {
 			JOptionPane.showMessageDialog(frame, "Database error: " + e.getMessage());
+		}
+		// close database resources
+		finally {
+		    try { if (connection != null) connection.close(); } catch (Exception e) {};
 		}
 		// if no matching username & password are found, return false
 		return false;
